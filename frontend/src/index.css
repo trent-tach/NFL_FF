@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.container {
+  max-width: 640px;
+  margin: 10vh auto 0;
+  padding: 0 1.5rem;
+}
+
+.card {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.card.ok {
+  background: #052e1a;
+  border-color: #16a34a;
+}
+
+.card.bad {
+  background: #2e0505;
+  border-color: #dc2626;
+}
