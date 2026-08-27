@@ -2,7 +2,7 @@
 
 Full-stack starter: FastAPI backend + React/TypeScript frontend.
 
-## Prerequisites
+## Prereq
 
 - Python 3.11+ (`python --version`)
 - Node.js 20+ (`node --version`)
@@ -28,12 +28,3 @@ npm run dev
 ```
 
 Open http://localhost:5173
-
-## How the connection works
-
-The frontend calls `fetch("/api/health")` — a relative URL. Vite's dev
-server (see `frontend/vite.config.ts`) proxies anything under `/api` to
-`http://127.0.0.1:8000`, so the browser thinks everything comes from one
-origin and CORS never comes up. In production you'd have nginx or your
-host do the same thing.
->>>>>>> 2177d9c (Initial setup FastAPI & react)
