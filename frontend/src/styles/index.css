@@ -1,0 +1,16 @@
+/* Global stylesheet. This is the only place Tailwind gets pulled in, and the
+   only place app-wide design tokens live. Imported once from main.tsx; no
+   other file in the app should import CSS. */
+
+@import "tailwindcss";
+
+/* Tailwind v4 keeps its config in CSS instead of a JS file. Anything declared
+   here turns into real utility classes, so --color-primary gives you
+   bg-primary, text-primary and border-primary for free. Change a hex here and
+   the whole app follows. */
+@theme {
+  --color-primary: #1d4ed8;
+  --color-surface: #ffffff;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+}
