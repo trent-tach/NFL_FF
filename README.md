@@ -10,6 +10,9 @@ Full-stack app: FastAPI backend + React/TypeScript frontend.
 - Routing: React Router v7
 - Database: PostgreSQL (not wired up yet)
 
+Everything installs with `npm install` / `pip install -r requirements.txt`
+below - there are no separate setup steps per library.
+
 ## Prerequisites
 
 - Python 3.11+ (`python --version`)
@@ -27,7 +30,7 @@ uvicorn main:app --reload --port 8000
 
 Check it works: http://127.0.0.1:8000/docs
 
-Run the frontend (terminal 2)
+## Run the frontend (terminal 2)
 
 ```powershell
 cd frontend
@@ -56,3 +59,12 @@ frontend/src/
 ├─ lib/         apiClient and shared helpers
 └─ styles/      global stylesheet + Tailwind theme
 ```
+
+Two conventions:
+
+- `@/` means `src/`, so `import Navbar from "@/components/Navbar"`.
+  Configured in both `vite.config.ts` and `tsconfig.json`.
+- Import a feature through its `index.ts`, never its internals.
+  `@/features/players`, not `@/features/players/components/PlayerTable`.
+
+Styling is Tailwind v4. Theme tokens live in `src/styles/index.css`.
