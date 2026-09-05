@@ -7,6 +7,7 @@
    else, and it should not. */
 
 import { Outlet } from "react-router-dom";
+import Navbar from "@/components/Navbar";
 
 export default function PublicLayout() {
   return (
@@ -14,11 +15,8 @@ export default function PublicLayout() {
        sticky-footer recipe: the footer sits at the bottom even on a
        near-empty page. */
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-border">
-        <nav className="mx-auto w-full max-w-6xl px-6 h-16 flex items-center">
-          <span className="font-bold">Fantasy Football</span>
-        </nav>
-      </header>
+      
+      <Navbar />
 
       {/* The same mx-auto max-w-6xl px-6 appears on all three bands so the
           header, content and footer share one column width. */}
