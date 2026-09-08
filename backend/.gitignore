@@ -1,2 +1,8 @@
 .venv/
 __pycache__/
+
+# Regenerated automatically by build_rankings.py / build_dst_rankings.py on
+# first run (see load_photo_map / load_team_logo_map in scripts/_photos.py) --
+# large, derived, and not something to keep in sync by hand in source control.
+data/players/photo_cache.json
+data/players/team_logo_cache.json
