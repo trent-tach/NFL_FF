@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "placeholder-dynasty-1",
+    "rank": 1,
+    "position_rank": 1,
+    "name": "Add dynasty rankings here",
+    "position": "RB",
+    "team": "-",
+    "photo_url": "/player-placeholder.svg",
+    "projection": 0,
+    "projection_label": "dynasty_value",
+    "games": null,
+    "rank_change": "new",
+    "roster_status": "ACT"
+  }
+]

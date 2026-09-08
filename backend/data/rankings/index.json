@@ -1,0 +1,32 @@
+[
+  {
+    "key": "preseason",
+    "label": "Preseason",
+    "type": "preseason"
+  },
+  {
+    "key": "week-01",
+    "label": "Week 1",
+    "type": "weekly"
+  },
+  {
+    "key": "ros-week-01",
+    "label": "Rest of Season",
+    "type": "ros"
+  },
+  {
+    "key": "kickers-week-01",
+    "label": "Week 1",
+    "type": "kicker"
+  },
+  {
+    "key": "dst-week-01",
+    "label": "Week 1",
+    "type": "dst"
+  },
+  {
+    "key": "games-week-01",
+    "label": "Week 1",
+    "type": "games"
+  }
+]

@@ -20,6 +20,7 @@ export default function Navbar() {
             ]} />
 
             <NavDropdown label="Tools" items={[
+                {to: "/tools/start-sit", label: "Start/Sit"},
                 {to: "/draft", label: "Mock Draft"},
                 {to: "/season", label: "In season advice"},
                 {to: "/intel", label: "Intel"}
