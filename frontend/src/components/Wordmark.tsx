@@ -8,9 +8,9 @@
    and footer slabs are dark rather than brand-colored. */
 
 const HEIGHTS = {
-  sm: "h-8", // 32px -- menu sheet
-  md: "h-11", // 44px -- header slab, inside a 64px bar
-  lg: "h-16", // 64px -- footer / large surfaces
+  sm: "h-10", // 40px -- menu sheet
+  md: "h-20 sm:h-24", // 80/96px -- header slab, inside a 96/112px bar
+  lg: "h-24", // 96px -- footer / large surfaces
 } as const;
 
 export default function Wordmark({

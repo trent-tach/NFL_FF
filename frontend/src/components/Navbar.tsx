@@ -165,7 +165,7 @@ export default function Navbar() {
           panel sitting on it. The bar's contents stay on the same
           max-w-6xl column as everything below. */}
       <div className="rounded-b-slab bg-ink text-on-brand shadow-slab">
-        <nav className="relative mx-auto flex h-16 max-w-6xl items-center gap-1 px-3 sm:px-6">
+        <nav className="relative mx-auto flex h-24 max-w-6xl items-center gap-1 px-3 sm:h-28 sm:px-6">
           <button
             onClick={() => setSheetOpen(true)}
             aria-label="Open menu"
@@ -180,25 +180,26 @@ export default function Navbar() {
             <BarLink to="/games">Games</BarLink>
           </div>
 
-          {/* `ml-auto` below lg pushes the CTA to the far right, so the phone
-              layout reads hamburger / mark / action with the mark actually on
-              center. From lg the left cluster exists, and the CTA tucks in
-              beside it while the right cluster takes the free space. */}
+          {/* The mark is centered only once the bar is wide enough to hold
+              it between the two clusters. At this size a centered lockup
+              would run into the CTA on a phone, and the fix is to let it
+              sit next to the menu button rather than to shrink it. */}
+          <Link
+            to="/"
+            aria-label="Workhorse home"
+            className="ml-1 lg:absolute lg:left-1/2 lg:top-1/2 lg:ml-0 lg:-translate-x-1/2 lg:-translate-y-1/2"
+          >
+            <Wordmark />
+          </Link>
+
+          {/* `ml-auto` below lg pushes the CTA to the far right; from lg the
+              left cluster exists and the CTA tucks in beside it while the
+              right cluster takes the free space. */}
           <Link
             to="/tools/start-sit"
             className="ml-auto rounded-full bg-surface px-4 py-1.5 font-display text-[12px] font-bold uppercase tracking-[0.08em] text-brand transition-colors hover:bg-brand-50 lg:ml-1"
           >
             Start/Sit
-          </Link>
-
-          {/* Absolutely centered so the mark stays on the page's optical
-              center line regardless of how wide the two clusters are. */}
-          <Link
-            to="/"
-            aria-label="Workhorse home"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          >
-            <Wordmark />
           </Link>
 
           <div className="ml-auto hidden items-center gap-0.5 lg:flex">
