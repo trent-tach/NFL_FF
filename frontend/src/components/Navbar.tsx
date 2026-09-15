@@ -157,48 +157,54 @@ export default function Navbar() {
   return (
     // `on-brand` flips the focus ring to white for everything in the slab;
     // the default brand-colored ring would be invisible against it.
-    <header className="on-brand px-3 sm:px-4 lg:px-6">
-      <nav className="relative mx-auto flex h-16 max-w-6xl items-center gap-1 rounded-b-slab bg-brand px-2 text-on-brand shadow-slab sm:px-4">
-        <button
-          onClick={() => setSheetOpen(true)}
-          aria-label="Open menu"
-          aria-expanded={sheetOpen}
-          className="rounded-full p-2 transition-colors hover:bg-white/15"
-        >
-          <MenuIcon size={22} />
-        </button>
+    <header className="on-brand">
+      {/* The slab runs the full width of the viewport and curves only at
+          its bottom edge, so it reads as part of the page rather than a
+          panel sitting on it. The bar's contents stay on the same
+          max-w-6xl column as everything below. */}
+      <div className="rounded-b-slab bg-brand text-on-brand shadow-slab">
+        <nav className="relative mx-auto flex h-16 max-w-6xl items-center gap-1 px-3 sm:px-6">
+          <button
+            onClick={() => setSheetOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={sheetOpen}
+            className="rounded-full p-2 transition-colors hover:bg-white/15"
+          >
+            <MenuIcon size={22} />
+          </button>
 
-        <div className="hidden items-center gap-0.5 lg:flex">
-          <NavDropdown label="Rankings" items={RANKINGS} />
-          <BarLink to="/games">Games</BarLink>
-        </div>
+          <div className="hidden items-center gap-0.5 lg:flex">
+            <NavDropdown label="Rankings" items={RANKINGS} />
+            <BarLink to="/games">Games</BarLink>
+          </div>
 
-        {/* `ml-auto` below lg pushes the CTA to the far right, so the phone
-            layout reads hamburger / mark / action with the mark actually on
-            center. From lg the left cluster exists, and the CTA tucks in
-            beside it while the right cluster takes the free space. */}
-        <Link
-          to="/tools/start-sit"
-          className="ml-auto rounded-full bg-surface px-4 py-1.5 font-display text-[12px] font-bold uppercase tracking-[0.08em] text-brand transition-colors hover:bg-brand-50 lg:ml-1"
-        >
-          Start/Sit
-        </Link>
+          {/* `ml-auto` below lg pushes the CTA to the far right, so the phone
+              layout reads hamburger / mark / action with the mark actually on
+              center. From lg the left cluster exists, and the CTA tucks in
+              beside it while the right cluster takes the free space. */}
+          <Link
+            to="/tools/start-sit"
+            className="ml-auto rounded-full bg-surface px-4 py-1.5 font-display text-[12px] font-bold uppercase tracking-[0.08em] text-brand transition-colors hover:bg-brand-50 lg:ml-1"
+          >
+            Start/Sit
+          </Link>
 
-        {/* Absolutely centered so the mark stays on the page's optical
-            center line regardless of how wide the two clusters are. */}
-        <Link
-          to="/"
-          aria-label="FF home"
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        >
-          <Wordmark />
-        </Link>
+          {/* Absolutely centered so the mark stays on the page's optical
+              center line regardless of how wide the two clusters are. */}
+          <Link
+            to="/"
+            aria-label="FF home"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            <Wordmark />
+          </Link>
 
-        <div className="ml-auto hidden items-center gap-0.5 lg:flex">
-          <BarLink to="/my-leagues">My leagues</BarLink>
-          <BarLink to="/my-matchups">Your matchups</BarLink>
-        </div>
-      </nav>
+          <div className="ml-auto hidden items-center gap-0.5 lg:flex">
+            <BarLink to="/my-leagues">My leagues</BarLink>
+            <BarLink to="/my-matchups">Your matchups</BarLink>
+          </div>
+        </nav>
+      </div>
 
       {sheetOpen && <MobileSheet onClose={() => setSheetOpen(false)} />}
     </header>

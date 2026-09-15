@@ -72,7 +72,7 @@ export default function AnnouncementBar() {
     setIndex((i) => (i + delta + messages.length) % messages.length);
 
   return (
-    <div className="px-3 sm:px-4 lg:px-6">
+    <div className="px-3 sm:px-6">
       <div className="mx-auto flex h-9 max-w-6xl items-center justify-center gap-2">
         {messages.length > 1 && (
           <button

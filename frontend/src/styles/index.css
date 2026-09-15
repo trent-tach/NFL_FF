@@ -43,20 +43,24 @@
   --color-on-brand-soft: #fbd9c4;
 
   /* --- Ground and ink ----------------------------------------------------
-     A warm cream page, white cards. The whole layout is rounded slabs
-     stacked on the cream, so `ground` is a structural color, not a
-     background nobody sees. */
-  --color-ground: #faf6ef;
+     A white page. The slabs (header, footer, hero) are what carry color,
+     so the ground stays out of their way -- and the header's bottom curve
+     reads as a shape cut into the page rather than a panel floating on a
+     tinted one.
+
+     The off-white steps below keep a trace of the brand's warmth so that
+     panels and sunken areas don't go cold gray next to the orange. */
+  --color-ground: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-alt: #f4eee4;
-  --color-surface-sunken: #f0e9dd;
+  --color-surface-alt: #f8f5f1;
+  --color-surface-sunken: #f2ede7;
 
   --color-ink: #1a1410;
   --color-ink-soft: #423a33;
-  --color-muted: #6b6259; /* 5.54:1 on cream */
+  --color-muted: #6b6259; /* 5.97:1 on white */
 
-  --color-border: #e7dfd3;
-  --color-border-strong: #d6cbba;
+  --color-border: #e8e2da;
+  --color-border-strong: #d6cdc1;
 
   /* Alias so the ~180 existing `text-primary` / `bg-primary` call sites
      reskin without being touched. New code should say `brand`. */
