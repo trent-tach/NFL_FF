@@ -13,6 +13,8 @@ import DynastyRankingsPage from "@/routes/public/DynastyRankingsPage";
 import PlayerPage from "@/routes/public/PlayerPage";
 import StartSitPage from "@/routes/public/StartSitPage";
 import GamesPage from "@/routes/public/GamesPage";
+import MyLeaguesPage from "@/routes/public/MyLeaguesPage";
+import MyMatchupsPage from "@/routes/public/MyMatchupsPage";
 
 export default function Router() {
   return (
@@ -26,6 +28,8 @@ export default function Router() {
         <Route path="/players/:slug" element={<PlayerPage />} />
         <Route path="/tools/start-sit" element={<StartSitPage />} />
         <Route path="/games" element={<GamesPage />} />
+        <Route path="/my-leagues" element={<MyLeaguesPage />} />
+        <Route path="/my-matchups" element={<MyMatchupsPage />} />
 
         {/* Catch-all. Without it, a typo'd URL renders a blank white page
             and no error, which is a genuinely confusing ten minutes. */}

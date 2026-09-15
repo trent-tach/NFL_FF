@@ -36,6 +36,14 @@ def kickoff_display(gameday: str, gametime: str) -> str:
     return dt.strftime("%a, %b %-d").upper() + " · " + dt.strftime("%H:%M")
 
 
+def _or_none(value: float) -> float | None:
+    """Vegas hasn't posted lines yet for a week far enough out -- rather
+    than write a bare Python NaN into the JSON (which round-trips as a
+    non-standard `NaN` token some JSON parsers reject outright), make the
+    "no line yet" case an explicit, valid `null`."""
+    return None if pd.isna(value) else value
+
+
 def build_entries(df: pd.DataFrame, logo_map: dict[str, str]) -> list[dict]:
     entries = []
     for _, row in df.iterrows():
@@ -48,7 +56,7 @@ def build_entries(df: pd.DataFrame, logo_map: dict[str, str]) -> list[dict]:
             "gameday": row["gameday"],
             "gametime": row["gametime"],
             "spread_display": spread_display(home, away, row["spread_line"]),
-            "total_line": row["total_line"],
+            "total_line": _or_none(row["total_line"]),
             "away_team": away,
             "away_logo_url": logo_map.get(away),
             "away_score": row["away_score"],

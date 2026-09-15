@@ -67,7 +67,7 @@ export default function GameCard({ game, index }: { game: GamePrediction; index:
         <div className="flex items-center justify-between text-[11px] text-muted">
           <span>{game.kickoff}</span>
           <span>
-            {game.spread_display} · O/U {game.total_line}
+            {game.spread_display} · O/U {game.total_line != null ? game.total_line : "TBD"}
           </span>
         </div>
 

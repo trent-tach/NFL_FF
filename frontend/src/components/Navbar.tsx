@@ -14,7 +14,8 @@ export default function Navbar() {
             ]} />
 
             <NavDropdown label="Fantasy" items={[
-                { to: "/myleagues", label: "My leagues"},
+                { to: "/my-leagues", label: "My leagues"},
+                { to: "/my-matchups", label: "Your Matchups"},
                 { to: "/create", label: "Create League" },
                 { to: "/join", label: "Join League"}
             ]} />

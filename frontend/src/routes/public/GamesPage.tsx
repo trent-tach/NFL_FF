@@ -36,7 +36,8 @@ export default function GamesPage() {
     <div>
       <h1 className="text-3xl font-bold tracking-tight">Game Predictions</h1>
       <p className="mt-2 text-muted">
-        Straight-up winner picks, blending the Vegas line with our own offense/defense signals.
+        Straight-up winner picks, driven mainly by our own strength-of-schedule-adjusted power
+        ratings and play efficiency — Vegas is only a minority input.
       </p>
 
       {error && (

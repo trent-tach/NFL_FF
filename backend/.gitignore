@@ -6,3 +6,7 @@ __pycache__/
 # large, derived, and not something to keep in sync by hand in source control.
 data/players/photo_cache.json
 data/players/team_logo_cache.json
+data/players/team_color_cache.json
+# Sleeper's full player directory (~15MB), fetched once and cached by
+# leagues.py's _load_sleeper_players.
+data/players/sleeper_players_cache.json
