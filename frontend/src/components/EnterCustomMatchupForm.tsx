@@ -137,7 +137,7 @@ export default function EnterCustomMatchupForm({
 
   return (
     <div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
@@ -188,11 +188,11 @@ export default function EnterCustomMatchupForm({
         <button
           onClick={handleSave}
           disabled={myPlayers.length === 0 || opponentPlayers.length === 0}
-          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-on-brand disabled:opacity-50"
         >
           Save Week {week} matchup
         </button>
-        <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-black/5">
+        <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-hover-tint">
           Cancel
         </button>
       </div>

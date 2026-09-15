@@ -141,11 +141,11 @@ export default function CustomLeagueSettingsForm({
         <button
           onClick={handleAdd}
           disabled={!leagueName.trim() || !teamName.trim()}
-          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-on-brand disabled:opacity-50"
         >
           Add League
         </button>
-        <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-black/5">
+        <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-hover-tint">
           Cancel
         </button>
       </div>

@@ -69,7 +69,7 @@ export default function LeagueMatchupCard({ league, week }: { league: ConnectedL
       <p className="text-sm text-muted">
         {league.leagueName} · {platformLabel(league.platform)} · Week {week}
       </p>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-sm text-danger">{error}</p>}
       {!matchup && !error && <p className="mt-2 text-sm text-muted">Loading…</p>}
       {matchup && (
         <>

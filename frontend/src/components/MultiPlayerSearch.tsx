@@ -41,7 +41,7 @@ export default function MultiPlayerSearch({
                   onChange([...selected, p]);
                   setQuery("");
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-black/5"
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-hover-tint"
               >
                 <PlayerPhoto src={p.photo_url} alt={p.name} size={22} />
                 <span className="font-medium">{p.name}</span>
@@ -58,7 +58,7 @@ export default function MultiPlayerSearch({
           {selected.map((p) => (
             <li
               key={p.slug}
-              className="flex items-center justify-between rounded-md bg-black/[0.03] px-3 py-1.5 text-sm"
+              className="flex items-center justify-between rounded-md bg-surface-alt px-3 py-1.5 text-sm"
             >
               <span className="flex items-center gap-2">
                 <PlayerPhoto src={p.photo_url} alt={p.name} size={20} />
@@ -71,7 +71,7 @@ export default function MultiPlayerSearch({
                 <span className="tabular-nums text-muted">{p.projection.toFixed(1)}</span>
                 <button
                   onClick={() => onChange(selected.filter((s) => s.slug !== p.slug))}
-                  className="text-muted hover:text-red-600"
+                  className="text-muted hover:text-danger"
                 >
                   ✕
                 </button>

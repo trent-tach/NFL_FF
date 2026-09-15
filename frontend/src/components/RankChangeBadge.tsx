@@ -9,7 +9,7 @@ export default function RankChangeBadge({ change }: { change: string }) {
   }
   const up = change.startsWith("+");
   return (
-    <span className={`text-xs font-medium ${up ? "text-green-600" : "text-red-600"}`}>
+    <span className={`text-xs font-medium ${up ? "text-success" : "text-danger"}`}>
       {up ? "▲" : "▼"} {change.replace(/^[+-]/, "")}
     </span>
   );

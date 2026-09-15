@@ -25,7 +25,7 @@ export default function MatchupOddsBar({
       </div>
       <div className="mt-1 flex h-1.5 w-full overflow-hidden rounded-full bg-border">
         <div className="bg-primary" style={{ width: `${leftWinPct}%` }} />
-        <div className="bg-black/70" style={{ width: `${rightWinPct}%` }} />
+        <div className="bg-ink" style={{ width: `${rightWinPct}%` }} />
       </div>
     </div>
   );

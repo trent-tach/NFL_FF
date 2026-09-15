@@ -81,7 +81,7 @@ export default function RosterSlotBox({
                   onSelect(p);
                   setQuery("");
                 }}
-                className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-black/5"
+                className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-hover-tint"
               >
                 <PlayerPhoto src={p.photo_url} alt={p.name} size={20} />
                 <span className="truncate font-medium">{p.name}</span>

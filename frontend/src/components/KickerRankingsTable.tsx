@@ -1,4 +1,5 @@
 import type { KickerEntry } from "@/lib/types";
+import DataTable, { type Column } from "./DataTable";
 import PlayerPhoto from "./PlayerPhoto";
 import RankChangeBadge from "./RankChangeBadge";
 
@@ -7,53 +8,77 @@ import RankChangeBadge from "./RankChangeBadge";
 // the team's offensive ranking, and how often that team goes for it on
 // 4th down instead of giving the kicker a look.
 
-export default function KickerRankingsTable({ entries }: { entries: KickerEntry[] }) {
-  if (entries.length === 0) {
-    return <p className="text-muted">No kickers in this ranking.</p>;
-  }
+const pct = (v: number | null) => (v != null ? `${(v * 100).toFixed(1)}%` : "—");
 
+const columns: Column<KickerEntry>[] = [
+  { key: "rank", header: "#", className: "w-10 font-medium tabular-nums", cell: (k) => k.rank },
+  {
+    key: "photo",
+    header: <span className="sr-only">Photo</span>,
+    className: "w-12",
+    cell: (k) => <PlayerPhoto src={k.photo_url} alt={k.name} size={36} />,
+  },
+  { key: "name", header: "Player", className: "font-semibold", cell: (k) => k.name },
+  { key: "team", header: "Team", className: "text-muted", cell: (k) => k.team },
+  { key: "opp", header: "Opp", className: "text-muted", cell: (k) => k.opponent },
+  {
+    key: "distance",
+    header: "Distance",
+    align: "right",
+    className: "font-display font-bold",
+    cell: (k) => k.distance_projection.toFixed(1),
+  },
+  {
+    key: "standard",
+    header: "Standard",
+    align: "right",
+    hideBelow: "md",
+    cell: (k) => k.standard_projection.toFixed(1),
+  },
+  { key: "fg", header: "FG%", align: "right", hideBelow: "lg", className: "text-muted", cell: (k) => pct(k.fg_pct) },
+  {
+    key: "offrk",
+    header: "Off Rk",
+    align: "right",
+    hideBelow: "lg",
+    className: "text-muted",
+    cell: (k) => k.offense_rank ?? "—",
+  },
+  {
+    key: "fourth",
+    header: "4th&Go%",
+    align: "right",
+    hideBelow: "lg",
+    className: "text-muted",
+    cell: (k) => pct(k.fourth_down_go_pct),
+  },
+  { key: "chg", header: "Chg", hideBelow: "md", cell: (k) => <RankChangeBadge change={k.rank_change} /> },
+];
+
+export default function KickerRankingsTable({ entries }: { entries: KickerEntry[] }) {
   return (
-    <table className="w-full text-sm">
-      <thead>
-        <tr className="border-b border-border text-left text-muted">
-          <th className="py-2 pr-2 w-10">#</th>
-          <th className="py-2 pr-2"></th>
-          <th className="py-2 pr-2">Player</th>
-          <th className="py-2 pr-2">Team</th>
-          <th className="py-2 pr-2">Opp</th>
-          <th className="py-2 pr-2 text-right">Distance</th>
-          <th className="py-2 pr-2 text-right">Standard</th>
-          <th className="py-2 pr-2 text-right">FG%</th>
-          <th className="py-2 pr-2 text-right">Off Rk</th>
-          <th className="py-2 pr-2 text-right">4th&amp;Go%</th>
-          <th className="py-2 pl-2">Chg</th>
-        </tr>
-      </thead>
-      <tbody>
-        {entries.map((k) => (
-          <tr key={k.slug} className="border-b border-border/60 hover:bg-black/[0.02]">
-            <td className="py-2 pr-2 font-medium">{k.rank}</td>
-            <td className="py-2 pr-2">
-              <PlayerPhoto src={k.photo_url} alt={k.name} />
-            </td>
-            <td className="py-2 pr-2 font-medium">{k.name}</td>
-            <td className="py-2 pr-2 text-muted">{k.team}</td>
-            <td className="py-2 pr-2 text-muted">{k.opponent}</td>
-            <td className="py-2 pr-2 text-right tabular-nums">{k.distance_projection.toFixed(1)}</td>
-            <td className="py-2 pr-2 text-right tabular-nums">{k.standard_projection.toFixed(1)}</td>
-            <td className="py-2 pr-2 text-right tabular-nums text-muted">
-              {k.fg_pct != null ? `${(k.fg_pct * 100).toFixed(1)}%` : "—"}
-            </td>
-            <td className="py-2 pr-2 text-right tabular-nums text-muted">{k.offense_rank ?? "—"}</td>
-            <td className="py-2 pr-2 text-right tabular-nums text-muted">
-              {k.fourth_down_go_pct != null ? `${(k.fourth_down_go_pct * 100).toFixed(1)}%` : "—"}
-            </td>
-            <td className="py-2 pl-2">
-              <RankChangeBadge change={k.rank_change} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <DataTable
+      rows={entries}
+      columns={columns}
+      rowKey={(k) => k.slug}
+      emptyMessage="No kickers in this ranking."
+      renderCard={(k) => (
+        <div className="flex items-center gap-3 rounded-card border border-border bg-surface px-3 py-2.5">
+          <span className="w-6 text-right font-display text-sm font-bold tabular-nums text-muted">
+            {k.rank}
+          </span>
+          <PlayerPhoto src={k.photo_url} alt={k.name} size={36} />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-semibold">{k.name}</span>
+            <span className="mt-0.5 block text-xs text-muted">
+              {k.team} · vs {k.opponent}
+            </span>
+          </span>
+          <span className="font-display text-base font-bold tabular-nums">
+            {k.distance_projection.toFixed(1)}
+          </span>
+        </div>
+      )}
+    />
   );
 }

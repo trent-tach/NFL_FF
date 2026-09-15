@@ -15,7 +15,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from _photos import RANKINGS_DIR, PLAYERS_DIR, load_team_logo_map, update_index
+from _photos import RANKINGS_DIR, PLAYERS_DIR, load_team_color_map, load_team_logo_map, update_index
 
 RANKING_TYPE = "games"
 
@@ -44,7 +44,9 @@ def _or_none(value: float) -> float | None:
     return None if pd.isna(value) else value
 
 
-def build_entries(df: pd.DataFrame, logo_map: dict[str, str]) -> list[dict]:
+def build_entries(
+    df: pd.DataFrame, logo_map: dict[str, str], color_map: dict[str, dict[str, str]]
+) -> list[dict]:
     entries = []
     for _, row in df.iterrows():
         home, away = row["home_team"], row["away_team"]
@@ -59,12 +61,14 @@ def build_entries(df: pd.DataFrame, logo_map: dict[str, str]) -> list[dict]:
             "total_line": _or_none(row["total_line"]),
             "away_team": away,
             "away_logo_url": logo_map.get(away),
+            "away_color": (color_map.get(away) or {}).get("primary"),
             "away_score": row["away_score"],
             "away_band_low": row["away_band_low"],
             "away_band_high": row["away_band_high"],
             "away_win_pct": row["away_win_pct"],
             "home_team": home,
             "home_logo_url": logo_map.get(home),
+            "home_color": (color_map.get(home) or {}).get("primary"),
             "home_score": row["home_score"],
             "home_band_low": row["home_band_low"],
             "home_band_high": row["home_band_high"],
@@ -88,8 +92,9 @@ def main() -> None:
 
     df = pd.read_csv(args.source)
     logo_map = load_team_logo_map()
+    color_map = load_team_color_map()
 
-    entries = build_entries(df, logo_map)
+    entries = build_entries(df, logo_map, color_map)
 
     out_path = RANKINGS_DIR / f"{args.week}.json"
     out_path.write_text(json.dumps(entries, indent=2))

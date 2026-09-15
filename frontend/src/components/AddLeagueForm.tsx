@@ -91,7 +91,7 @@ export default function AddLeagueForm({
               setError(null);
             }}
             className={`rounded-md px-3 py-1.5 text-sm font-medium capitalize ${
-              platform === p ? "bg-primary text-white" : "hover:bg-black/5"
+              platform === p ? "bg-primary text-on-brand" : "hover:bg-hover-tint"
             }`}
           >
             {p}
@@ -134,7 +134,7 @@ export default function AddLeagueForm({
               </label>
 
               {isPrivate && (
-                <div className="rounded-md bg-black/[0.03] p-4 text-sm">
+                <div className="rounded-md bg-surface-alt p-4 text-sm">
                   <p className="font-medium">Open ESPN's cookie storage</p>
                   <p className="mt-1 text-muted">
                     While logged into espn.com: open DevTools → <b>Application</b> tab (Chrome/Edge) or{" "}
@@ -161,17 +161,17 @@ export default function AddLeagueForm({
             </>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
 
           <div className="flex gap-2">
             <button
               onClick={handleLookup}
               disabled={loading || !leagueId.trim()}
-              className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+              className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-on-brand disabled:opacity-50"
             >
               {loading ? "Looking up…" : "Look up league"}
             </button>
-            <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-black/5">
+            <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-hover-tint">
               Cancel
             </button>
           </div>
@@ -189,7 +189,7 @@ export default function AddLeagueForm({
               <li key={team.roster_id ?? team.team_id}>
                 <button
                   onClick={() => handlePickTeam(team)}
-                  className="flex w-full items-center gap-3 rounded-md border border-border px-3 py-2 text-left text-sm hover:bg-black/5"
+                  className="flex w-full items-center gap-3 rounded-md border border-border px-3 py-2 text-left text-sm hover:bg-hover-tint"
                 >
                   {(team.avatar_url || team.logo_url) && (
                     <img src={team.avatar_url ?? team.logo_url ?? ""} alt="" width={24} height={24} className="rounded-full" />

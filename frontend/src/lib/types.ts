@@ -8,6 +8,9 @@ export interface RankingManifestItem {
   key: string;
   label: string;
   type: RankingType;
+  // When the converter last wrote this board. Optional because boards
+  // imported before the converter started stamping them don't carry one.
+  generated_at?: string | null;
 }
 
 export interface RankingEntry {
@@ -29,6 +32,13 @@ export interface RankingEntry {
   games: number | null;
   rank_change: string; // "new" | "0" | "+N" | "-N"
   roster_status: string;
+  // Football-native fields added with the redesign. All optional: the
+  // frontend renders correctly against boards generated before the
+  // pipeline started emitting them, so the UI could ship first.
+  bye_week?: number | null;
+  injury_status?: string | null; // "Questionable" | "Doubtful" | "Out" | "IR"
+  playing_probability?: number | null; // 0-1
+  team_color?: string | null; // team primary, hex
 }
 
 export interface KickerEntry {
@@ -72,12 +82,14 @@ export interface GamePrediction {
   total_line: number | null; // null when Vegas hasn't posted a total yet (a far-out week)
   away_team: string;
   away_logo_url: string | null;
+  away_color?: string | null; // team primary, hex
   away_score: number;
   away_band_low: number;
   away_band_high: number;
   away_win_pct: number;
   home_team: string;
   home_logo_url: string | null;
+  home_color?: string | null; // team primary, hex
   home_score: number;
   home_band_low: number;
   home_band_high: number;

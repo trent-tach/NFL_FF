@@ -26,7 +26,7 @@ export default function CustomMatchupCard({
     <div className="rounded-md border border-border p-5">
       <div className="flex items-center justify-between">
         <p className="font-semibold">{matchup.name}</p>
-        <button onClick={onRemove} className="text-sm text-muted hover:text-red-600">
+        <button onClick={onRemove} className="text-sm text-muted hover:text-danger">
           Remove
         </button>
       </div>

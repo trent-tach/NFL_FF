@@ -18,7 +18,7 @@ import pandas as pd
 from _photos import (
     RANKINGS_DIR, PLAYERS_DIR, PLACEHOLDER_PHOTO, normalize_name, slugify,
     load_photo_map, load_overrides, load_previous_ranks, rank_change, update_index,
-    load_team_logo_map,
+    load_team_logo_map, load_team_color_map,
 )
 
 # Column name, by ranking type, for the "how many points" and "what rank"
@@ -56,7 +56,8 @@ def weather_label(roof, temp, wind) -> str | None:
 
 def build_entries(df: pd.DataFrame, ranking_type: str, photo_map: dict[str, str],
                    overrides: dict[str, str], previous_ranks: dict[str, int],
-                   logo_map: dict[str, str]) -> list[dict]:
+                   logo_map: dict[str, str],
+                   color_map: dict[str, dict[str, str]]) -> list[dict]:
     projection_col = PROJECTION_COL[ranking_type]
     # Only the weekly board has a single, well-defined opponent per player
     # (build_weekly_rankings carries it straight from project_week) --
@@ -66,6 +67,9 @@ def build_entries(df: pd.DataFrame, ranking_type: str, photo_map: dict[str, str]
     has_opp_rank = "opp_rank" in df.columns
     has_weather = "roof" in df.columns  # weekly only
     has_dome_games = "dome_games" in df.columns  # ROS only
+    has_injury = "injury_status" in df.columns  # weekly only
+    has_bye = "bye_week" in df.columns  # weekly only
+    has_play_prob = "playing_probability" in df.columns
 
     # `main()`'s weekly output has no rank column at all (just a top-30
     # slice sorted by final_projection) -- derive one instead of requiring
@@ -99,6 +103,13 @@ def build_entries(df: pd.DataFrame, ranking_type: str, photo_map: dict[str, str]
         dome = bool(row["roof"] in DOME_ROOFS) if has_weather and pd.notna(row["roof"]) else None
         weather = weather_label(row["roof"], row["temp"], row["wind"]) if has_weather else None
         dome_games = int(row["dome_games"]) if has_dome_games and pd.notna(row["dome_games"]) else None
+        injury_status = row["injury_status"] if has_injury and pd.notna(row["injury_status"]) else None
+        bye_week = int(row["bye_week"]) if has_bye and pd.notna(row["bye_week"]) else None
+        play_prob = (
+            round(float(row["playing_probability"]), 2)
+            if has_play_prob and pd.notna(row["playing_probability"])
+            else None
+        )
         entries.append({
             "slug": slug,
             "rank": rank,
@@ -113,6 +124,10 @@ def build_entries(df: pd.DataFrame, ranking_type: str, photo_map: dict[str, str]
             "dome": dome,
             "weather": weather,
             "dome_games": dome_games,
+            "injury_status": injury_status,
+            "bye_week": bye_week,
+            "playing_probability": play_prob,
+            "team_color": (color_map.get(row["team"]) or {}).get("primary"),
             "projection": round(float(row[projection_col]), 1),
             "projection_label": projection_col,
             "games": int(row[games_col]) if games_col and games_col in row else None,
@@ -146,9 +161,10 @@ def main() -> None:
     photo_map = load_photo_map()
     overrides = load_overrides()
     logo_map = load_team_logo_map()
+    color_map = load_team_color_map()
     previous_ranks = load_previous_ranks(args.type, args.week, args.format)
 
-    entries = build_entries(df, args.type, photo_map, overrides, previous_ranks, logo_map)
+    entries = build_entries(df, args.type, photo_map, overrides, previous_ranks, logo_map, color_map)
     entries.sort(key=lambda e: e["rank"])
 
     out_path = RANKINGS_DIR / f"{args.week}__{args.format}.json"

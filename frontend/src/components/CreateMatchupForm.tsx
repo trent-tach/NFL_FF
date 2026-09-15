@@ -55,7 +55,7 @@ export default function CreateMatchupForm({
 
   return (
     <div className="rounded-md border border-border p-5">
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div>
         <label className="block text-sm font-medium text-muted">Matchup name (optional)</label>
@@ -100,11 +100,11 @@ export default function CreateMatchupForm({
         <button
           onClick={handleSave}
           disabled={sideA.length === 0 || sideB.length === 0}
-          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-on-brand disabled:opacity-50"
         >
           Save matchup
         </button>
-        <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-black/5">
+        <button onClick={onCancel} className="rounded-md px-4 py-1.5 text-sm text-muted hover:bg-hover-tint">
           Cancel
         </button>
       </div>

@@ -3,7 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fantasy Football</title>
+
+    <title>FF — Fantasy Football Projections</title>
+    <meta
+      name="description"
+      content="Weekly fantasy football rankings and straight-up game picks, built on our own strength-of-schedule-adjusted power ratings and play efficiency."
+    />
+    <meta name="theme-color" content="#c04a14" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FF — Fantasy Football Projections" />
+    <meta
+      property="og:description"
+      content="Weekly rankings and game picks driven by our own power ratings, not the Vegas line."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Archivo for the all-caps nav and headlines, Inter for everything read
+         in volume. Preconnecting to both Google hosts matters here: the font
+         files come from gstatic, not googleapis, so without the second hint
+         the browser pays a second connection setup mid-render. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    />
   </head>
   <body>
     <div id="root"></div>

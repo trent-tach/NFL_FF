@@ -5,12 +5,183 @@
 @import "tailwindcss";
 
 /* Tailwind v4 keeps its config in CSS instead of a JS file. Anything declared
-   here turns into real utility classes, so --color-primary gives you
-   bg-primary, text-primary and border-primary for free. Change a hex here and
-   the whole app follows. */
+   here turns into real utility classes, so --color-brand gives you bg-brand,
+   text-brand and border-brand for free. Change a hex here and the whole app
+   follows. */
 @theme {
-  --color-primary: #1d4ed8;
+  /* --- Brand -------------------------------------------------------------
+     A warm, saturated orange. Two stops do the real work and the split
+     between them is a contrast decision, not a stylistic one:
+
+       brand (600)  text-bearing surfaces -- the nav slab, primary buttons.
+                    4.96:1 against white, so 13px nav labels stay legible.
+       brand-accent (500) non-text only -- rules, bar fills, chart accents.
+                    3.53:1 against white, which fails body text but is the
+                    more vivid orange, so it carries weight where nothing
+                    has to be read on top of it.
+
+     Reaching for -accent behind small text is the one way to break this
+     palette, so it is named for what it may touch rather than for its hue. */
+  --color-brand-50: #fef4ec;
+  --color-brand-100: #fce4d2;
+  --color-brand-200: #f8c4a2;
+  --color-brand-300: #f39c69;
+  --color-brand-400: #ee7736;
+  --color-brand-500: #e45f18;
+  --color-brand-600: #c04a14;
+  --color-brand-700: #9e3d11;
+  --color-brand-800: #7d310e;
+  --color-brand-900: #5f260c;
+
+  --color-brand: #c04a14;
+  --color-brand-strong: #99380c; /* hover / pressed */
+  --color-brand-accent: #e45f18; /* never behind small text */
+  --color-on-brand: #ffffff;
+
+  /* Secondary text on the orange slab. Tinted from the brand hue rather
+     than grayed -- gray on a saturated ground reads as a rendering fault. */
+  --color-on-brand-soft: #fbd9c4;
+
+  /* --- Ground and ink ----------------------------------------------------
+     A warm cream page, white cards. The whole layout is rounded slabs
+     stacked on the cream, so `ground` is a structural color, not a
+     background nobody sees. */
+  --color-ground: #faf6ef;
   --color-surface: #ffffff;
-  --color-muted: #64748b;
-  --color-border: #e2e8f0;
+  --color-surface-alt: #f4eee4;
+  --color-surface-sunken: #f0e9dd;
+
+  --color-ink: #1a1410;
+  --color-ink-soft: #423a33;
+  --color-muted: #6b6259; /* 5.54:1 on cream */
+
+  --color-border: #e7dfd3;
+  --color-border-strong: #d6cbba;
+
+  /* Alias so the ~180 existing `text-primary` / `bg-primary` call sites
+     reskin without being touched. New code should say `brand`. */
+  --color-primary: var(--color-brand);
+
+  /* --- Semantic ----------------------------------------------------------
+     These exist so status color stops being copy-pasted Tailwind stops.
+     Each pairs a text-safe value with a tint for its surface. */
+  --color-danger: #b42318;
+  --color-danger-soft: #fef3f2;
+  --color-danger-border: #fecdca;
+
+  --color-success: #067647;
+  --color-success-soft: #ecfdf3;
+
+  --color-warning: #b54708;
+  --color-warning-soft: #fffaeb;
+  --color-warning-border: #fedf89;
+
+  /* Hover tints are ink-based, not black, so they stay warm on cream. */
+  --color-hover-tint: rgb(26 20 16 / 0.045);
+  --color-hover-tint-strong: rgb(26 20 16 / 0.08);
+  --color-scrim: rgb(26 20 16 / 0.72);
+
+  /* --- Type --------------------------------------------------------------
+     Archivo carries the all-caps nav and headlines; its 800 is squared and
+     dense enough to hold a slab. Inter sets everything that has to be read
+     in volume, and has true tabular figures for the projection columns. */
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* --- Shape -------------------------------------------------------------
+     `slab` is the 24px radius the header, hero and footer share; it is what
+     makes the page read as stacked panels rather than a document. */
+  --radius-slab: 24px;
+  --radius-card: 14px;
+
+  --shadow-card: 0 1px 2px rgb(26 20 16 / 0.05), 0 8px 24px -12px rgb(26 20 16 / 0.18);
+  --shadow-slab: 0 10px 30px -18px rgb(192 74 20 / 0.55);
+}
+
+@layer base {
+  /* The page ground and ink are declared explicitly rather than inherited.
+     Without this, `body` renders transparent with black text, so any host
+     painting a dark ground behind the document (a dark-scheme browser, an
+     embedded preview) shows through underneath unreadable black chrome.
+     `color-scheme: light` is the other half: it tells the UA this design
+     has committed to light, so form controls and scrollbars match. */
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Headings balance their last line instead of leaving one orphaned word,
+     and hold their tracking tight at display sizes. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  /* Browser surfaces we did not draw still belong to the design. Selection,
+     the caret and the focus ring all ship with UA defaults keyed to blue,
+     which would be the one piece of stock Tailwind left in the app. */
+  ::selection {
+    background-color: var(--color-brand-200);
+    color: var(--color-ink);
+  }
+
+  :where(input, textarea, [contenteditable]) {
+    caret-color: var(--color-brand);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  /* Inside the orange slab a brand-colored ring would be invisible, so the
+     ring inverts along with the text. */
+  .on-brand :focus-visible {
+    outline-color: var(--color-on-brand);
+  }
+
+  * {
+    scrollbar-color: var(--color-border-strong) transparent;
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-strong);
+    border: 3px solid var(--color-ground);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-muted);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }

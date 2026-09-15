@@ -47,7 +47,7 @@ export default function MyLeaguesPage() {
             </div>
             <button
               onClick={() => setLeagues(removeLeague(league.id))}
-              className="text-sm text-muted hover:text-red-600"
+              className="text-sm text-muted hover:text-danger"
             >
               Remove
             </button>
@@ -73,7 +73,7 @@ export default function MyLeaguesPage() {
         ) : (
           <button
             onClick={() => setShowForm(true)}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-brand"
           >
             + Add League
           </button>

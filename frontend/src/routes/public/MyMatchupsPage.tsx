@@ -91,7 +91,7 @@ export default function MyMatchupsPage() {
           ) : (
             <button
               onClick={() => setShowCreate(true)}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-brand"
             >
               + Compare Players
             </button>
