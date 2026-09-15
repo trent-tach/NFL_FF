@@ -41,11 +41,13 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="rounded-slab bg-ink px-6 py-14 text-white sm:px-12 sm:py-20">
+      {/* The header and footer slabs are dark so the lockup reads on them,
+          which leaves the hero to carry the brand color. */}
+      <section className="rounded-slab bg-brand px-6 py-14 text-on-brand sm:px-12 sm:py-20">
         <h1 className="max-w-3xl text-4xl font-bold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
           Rankings that don't just repeat the betting line.
         </h1>
-        <p className="mt-6 max-w-[62ch] text-lg text-white/70">
+        <p className="mt-6 max-w-[62ch] text-lg text-white/85">
           Our power ratings come from score differential adjusted for who a team has actually
           played, blended with play-by-play efficiency. The Vegas line gets a minority vote — it
           doesn't set the number.
@@ -53,13 +55,13 @@ export default function HomePage() {
         <div className="mt-9 flex flex-wrap gap-3">
           <Link
             to="/redraft"
-            className="rounded-full bg-brand px-6 py-3 font-display text-[13px] font-bold uppercase tracking-[0.08em] text-on-brand transition-colors hover:bg-brand-strong"
+            className="rounded-full bg-surface px-6 py-3 font-display text-[13px] font-bold uppercase tracking-[0.08em] text-brand transition-colors hover:bg-brand-50"
           >
             This week's rankings
           </Link>
           <Link
             to="/games"
-            className="rounded-full border border-white/25 px-6 py-3 font-display text-[13px] font-bold uppercase tracking-[0.08em] transition-colors hover:bg-white/10"
+            className="rounded-full border border-white/40 px-6 py-3 font-display text-[13px] font-bold uppercase tracking-[0.08em] transition-colors hover:bg-white/10"
           >
             Game picks
           </Link>

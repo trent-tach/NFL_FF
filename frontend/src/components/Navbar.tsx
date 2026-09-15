@@ -101,16 +101,18 @@ function MobileSheet({ onClose }: { onClose: () => void }) {
       aria-modal="true"
       aria-label="Site menu"
       onKeyDown={onKeyDown}
-      className="fixed inset-0 z-[60] overflow-y-auto bg-ground px-5 py-5"
+      // Dark, like the bar it opens from -- and the lockup's football and
+      // lettering are cream, so they would disappear on a white sheet.
+      className="on-brand fixed inset-0 z-[60] overflow-y-auto bg-ink px-5 py-5 text-on-brand"
     >
       <div className="mx-auto max-w-6xl">
         <div className="flex h-10 items-center justify-between">
-          <Wordmark size="sm" className="text-brand" />
+          <Wordmark size="sm" />
           <button
             ref={closeRef}
             onClick={onClose}
             aria-label="Close menu"
-            className="rounded-full p-2 text-ink transition-colors hover:bg-hover-tint"
+            className="rounded-full p-2 transition-colors hover:bg-white/15"
           >
             <CloseIcon size={22} />
           </button>
@@ -119,7 +121,7 @@ function MobileSheet({ onClose }: { onClose: () => void }) {
         <nav className="mt-8 flex flex-col gap-9 pb-10">
           {SHEET_SECTIONS.map((section) => (
             <div key={section.heading}>
-              <h2 className="font-display text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
+              <h2 className="font-display text-[11px] font-bold uppercase tracking-[0.14em] text-white/55">
                 {section.heading}
               </h2>
               <div className="mt-3 flex flex-col">
@@ -130,7 +132,7 @@ function MobileSheet({ onClose }: { onClose: () => void }) {
                     onClick={onClose}
                     className={({ isActive }) =>
                       `-mx-2 rounded-[10px] px-2 py-2.5 font-display text-2xl font-bold tracking-[-0.02em] transition-colors ${
-                        isActive ? "text-brand" : "hover:bg-hover-tint"
+                        isActive ? "text-brand-300" : "hover:bg-white/10"
                       }`
                     }
                   >
@@ -162,7 +164,7 @@ export default function Navbar() {
           its bottom edge, so it reads as part of the page rather than a
           panel sitting on it. The bar's contents stay on the same
           max-w-6xl column as everything below. */}
-      <div className="rounded-b-slab bg-brand text-on-brand shadow-slab">
+      <div className="rounded-b-slab bg-ink text-on-brand shadow-slab">
         <nav className="relative mx-auto flex h-16 max-w-6xl items-center gap-1 px-3 sm:px-6">
           <button
             onClick={() => setSheetOpen(true)}
@@ -193,7 +195,7 @@ export default function Navbar() {
               center line regardless of how wide the two clusters are. */}
           <Link
             to="/"
-            aria-label="FF home"
+            aria-label="Workhorse home"
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           >
             <Wordmark />

@@ -28,12 +28,14 @@ export default function PublicLayout() {
       {/* Mirrors the header: full width, same radius, turned the other way
           up, so the page is bracketed by the same shape. */}
       <footer className="mt-10">
-        <div className="rounded-t-slab bg-surface-alt">
-          <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        {/* Dark like the header, which brackets the page in one shape and
+            gives the lockup the ground it was drawn for. */}
+        <div className="rounded-t-slab bg-ink text-white">
+          <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+            <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
               <div className="max-w-sm">
-                <Wordmark size="sm" className="text-brand" />
-                <p className="mt-3 text-sm text-muted">
+                <Wordmark size="lg" />
+                <p className="mt-4 text-sm text-white/65">
                   Weekly projections and straight-up game picks, built on our own
                   strength-of-schedule-adjusted power ratings and play efficiency.
                 </p>
@@ -42,10 +44,10 @@ export default function PublicLayout() {
               {/* The provenance a projection site owes its reader: what the
                   numbers are built from, and who made them. */}
               <dl className="text-sm">
-                <dt className="font-display text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
+                <dt className="font-display text-[11px] font-bold uppercase tracking-[0.14em] text-white/55">
                   How the numbers are made
                 </dt>
-                <dd className="mt-2 max-w-xs text-muted">
+                <dd className="mt-2 max-w-xs text-white/65">
                   Power ratings from score differential adjusted for strength of schedule, blended
                   with play-by-play efficiency. Vegas lines are a minority input, never the
                   starting point. Play and schedule data from nflverse.
@@ -53,8 +55,8 @@ export default function PublicLayout() {
               </dl>
             </div>
 
-            <p className="mt-10 border-t border-border pt-5 text-xs text-muted">
-              &copy; {new Date().getFullYear()} FF. Projections are estimates, not advice.
+            <p className="mt-10 border-t border-white/15 pt-5 text-xs text-white/55">
+              &copy; {new Date().getFullYear()} Workhorse. Projections are estimates, not advice.
             </p>
           </div>
         </div>
