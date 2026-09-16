@@ -17,6 +17,7 @@ import { MenuIcon, CloseIcon } from "./icons";
 const RANKINGS: NavItem[] = [
   { to: "/redraft", label: "Redraft rankings" },
   { to: "/dynasty", label: "Dynasty rankings" },
+  { to: "/advanced-stats", label: "Advanced stats" },
 ];
 
 // The sheet's full tree. Every entry here resolves to a real route; an

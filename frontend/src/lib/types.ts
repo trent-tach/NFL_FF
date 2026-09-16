@@ -1,7 +1,7 @@
 // Shared shapes returned by /api/rankings/* and /api/players/*. Kept in one
 // file since the rankings page and the player page both consume them.
 
-export type RankingType = "preseason" | "weekly" | "ros" | "kicker" | "dst" | "games";
+export type RankingType = "preseason" | "weekly" | "ros" | "kicker" | "dst" | "games" | "usage";
 export type ScoringFormat = "ppr" | "half_ppr" | "standard";
 
 export interface RankingManifestItem {
@@ -71,6 +71,29 @@ export interface DSTEntry {
   takeaways_pg: number;
   points_allowed_pg: number;
   rank_change: string;
+}
+
+// A stats explorer, not a ranking -- no `rank`/`rank_change`, and every
+// stat is nullable because it depends on the player's role (a QB has no
+// meaningful target_share; most WRs never carry the ball).
+export interface UsageStatEntry {
+  player_id: string;
+  slug: string;
+  name: string;
+  team: string;
+  position: "QB" | "RB" | "WR" | "TE";
+  photo_url: string;
+  logo_url: string | null;
+  team_color: string | null;
+  games: number;
+  target_share: number | null; // 0-1
+  air_yards: number | null;
+  air_yards_share: number | null; // 0-1
+  adot: number | null;
+  red_zone_targets: number;
+  rush_share: number | null; // 0-1
+  snap_pct: number | null; // 0-100
+  team_success_rate: number | null; // 0-1, same value for every player on a team
 }
 
 export interface GamePrediction {

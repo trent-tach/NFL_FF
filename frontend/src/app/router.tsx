@@ -10,6 +10,7 @@ import PublicLayout from "@/layouts/PublicLayout";
 import HomePage from "@/routes/public/HomePage";
 import RedraftRankingsPage from "@/routes/public/RedraftRankingsPage";
 import DynastyRankingsPage from "@/routes/public/DynastyRankingsPage";
+import AdvancedStatsPage from "@/routes/public/AdvancedStatsPage";
 import PlayerPage from "@/routes/public/PlayerPage";
 import StartSitPage from "@/routes/public/StartSitPage";
 import GamesPage from "@/routes/public/GamesPage";
@@ -26,6 +27,7 @@ export default function Router() {
         <Route path="/" element={<HomePage />} />
         <Route path="/redraft" element={<RedraftRankingsPage />} />
         <Route path="/dynasty" element={<DynastyRankingsPage />} />
+        <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
         <Route path="/players/:slug" element={<PlayerPage />} />
         <Route path="/tools/start-sit" element={<StartSitPage />} />
         <Route path="/games" element={<GamesPage />} />

@@ -63,7 +63,7 @@ def _manifest_type(week_key: str) -> str | None:
 # Kicker, DST, and game-prediction boards have no PPR/Half/Standard
 # scoring-format variant (like dynasty.json) -- their files are plain
 # `{key}.json`.
-NO_FORMAT_TYPES = ("kicker", "dst", "games")
+NO_FORMAT_TYPES = ("kicker", "dst", "games", "usage")
 
 
 @app.get("/api/rankings/redraft/{week_key}")
