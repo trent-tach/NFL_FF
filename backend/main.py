@@ -15,7 +15,10 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 
+from leagues import router as leagues_router
+
 app = FastAPI(title="Fantasy Football API")
+app.include_router(leagues_router)
 
 DATA_DIR = Path(__file__).parent / "data"
 RANKINGS_DIR = DATA_DIR / "rankings"
@@ -60,7 +63,7 @@ def _manifest_type(week_key: str) -> str | None:
 # Kicker, DST, and game-prediction boards have no PPR/Half/Standard
 # scoring-format variant (like dynasty.json) -- their files are plain
 # `{key}.json`.
-NO_FORMAT_TYPES = ("kicker", "dst", "games")
+NO_FORMAT_TYPES = ("kicker", "dst", "games", "usage")
 
 
 @app.get("/api/rankings/redraft/{week_key}")

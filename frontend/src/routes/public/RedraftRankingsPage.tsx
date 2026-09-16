@@ -30,6 +30,11 @@ const FLEX_POSITIONS = new Set(["RB", "WR", "TE"]);
 // swap in an entirely different board (Project Upright / the DST model).
 const SPECIAL_POSITIONS = new Set<PositionFilter>(["K", "DST"]);
 
+// The shared look for the board's own controls, matching the nav's
+// small-caps display language so the page chrome reads as one system.
+const CONTROL =
+  "rounded-full border border-border-strong bg-surface px-4 py-2 font-display text-[12px] font-bold uppercase tracking-[0.06em] transition-colors hover:bg-hover-tint";
+
 export default function RedraftRankingsPage() {
   const [manifest, setManifest] = useState<RankingManifestItem[]>([]);
   const [weekKey, setWeekKey] = useState<string | null>(null);
@@ -108,16 +113,17 @@ export default function RedraftRankingsPage() {
       <p className="mt-2 text-muted">Model projections, updated as the season progresses.</p>
 
       {error && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+        <div className="mt-4 rounded-card border border-danger-border bg-danger-soft px-4 py-3 text-danger">
           <strong>Could not load rankings</strong> ({error}).
         </div>
       )}
 
-      <div className="mt-6 flex flex-wrap items-center gap-4">
+      <div className="mt-6 flex flex-wrap items-center gap-3">
         <select
           value={weekKey ?? ""}
           onChange={(e) => setWeekKey(e.target.value)}
-          className="rounded-md border border-border px-3 py-1.5 text-sm"
+          aria-label="Ranking period"
+          className={CONTROL}
         >
           {GROUP_ORDER.filter((t) => grouped[t].length > 0).map((type) => (
             <optgroup key={type} label={GROUP_LABEL[type]}>
@@ -134,7 +140,8 @@ export default function RedraftRankingsPage() {
           <select
             value={scoringFormat}
             onChange={(e) => setScoringFormat(e.target.value as ScoringFormat)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm"
+            aria-label="Scoring format"
+            className={CONTROL}
           >
             {SCORING_FORMATS.map((f) => (
               <option key={f.value} value={f.value}>
@@ -144,13 +151,23 @@ export default function RedraftRankingsPage() {
           </select>
         )}
 
-        <div className="flex gap-1">
+        {/* Scrolls rather than wrapping or clipping: eight pills don't fit a
+            phone, and the last two (K, DST) used to run off the right edge
+            and drag the whole page sideways with them. */}
+        <div
+          role="group"
+          aria-label="Position"
+          className="-mx-4 flex gap-1 overflow-x-auto px-4 sm:mx-0 sm:px-0"
+        >
           {POSITIONS.map((pos) => (
             <button
               key={pos}
               onClick={() => setPosition(pos)}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                position === pos ? "bg-primary text-white" : "hover:bg-black/5"
+              aria-pressed={position === pos}
+              className={`shrink-0 rounded-full px-3.5 py-2 font-display text-[12px] font-bold uppercase tracking-[0.06em] transition-colors ${
+                position === pos
+                  ? "bg-brand text-on-brand"
+                  : "border border-border-strong hover:bg-hover-tint"
               }`}
             >
               {pos}

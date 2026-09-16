@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -16,6 +17,7 @@ PLAYERS_DIR = DATA_DIR / "players"
 PHOTO_CACHE_PATH = PLAYERS_DIR / "photo_cache.json"
 PHOTO_OVERRIDES_PATH = PLAYERS_DIR / "photo_overrides.json"
 TEAM_LOGO_CACHE_PATH = PLAYERS_DIR / "team_logo_cache.json"
+TEAM_COLOR_CACHE_PATH = PLAYERS_DIR / "team_color_cache.json"
 INDEX_PATH = RANKINGS_DIR / "index.json"
 PLACEHOLDER_PHOTO = "/player-placeholder.svg"
 
@@ -79,6 +81,28 @@ def load_team_logo_map() -> dict[str, str]:
     return logo_map
 
 
+def load_team_color_map() -> dict[str, dict[str, str]]:
+    """Each team's own two colors, keyed by abbreviation. Cached exactly like
+    the logo map above.
+
+    This is what lets a game card be tinted by who is playing instead of by
+    an arbitrary rotating palette -- on a sports site, color is data."""
+    if TEAM_COLOR_CACHE_PATH.exists():
+        return json.loads(TEAM_COLOR_CACHE_PATH.read_text())
+
+    import nflreadpy as nfl
+
+    teams = nfl.load_teams().select(["team_abbr", "team_color", "team_color2"]).to_pandas()
+    color_map = {
+        row["team_abbr"]: {"primary": row["team_color"], "secondary": row["team_color2"]}
+        for _, row in teams.iterrows()
+    }
+
+    PLAYERS_DIR.mkdir(parents=True, exist_ok=True)
+    TEAM_COLOR_CACHE_PATH.write_text(json.dumps(color_map))
+    return color_map
+
+
 def load_previous_ranks(ranking_type: str, current_key: str, suffix: str | None = None) -> dict[str, int]:
     """Rank-by-slug from the most recent manifest entry of the same type
     (and, for the QB/RB/WR/TE rankings, the same scoring-format `suffix`)
@@ -110,5 +134,14 @@ def rank_change(previous_ranks: dict[str, int], slug: str, rank: int) -> str:
 def update_index(key: str, label: str, ranking_type: str) -> None:
     manifest = json.loads(INDEX_PATH.read_text()) if INDEX_PATH.exists() else []
     manifest = [e for e in manifest if e["key"] != key]
-    manifest.append({"key": key, "label": label, "type": ranking_type})
+    # `generated_at` is what the site shows as "updated ...". The first
+    # question anyone asks of a projection is how old it is, so the answer
+    # gets recorded at the moment the board is written rather than guessed
+    # later from a file mtime that any copy or checkout would reset.
+    manifest.append({
+        "key": key,
+        "label": label,
+        "type": ranking_type,
+        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    })
     INDEX_PATH.write_text(json.dumps(manifest, indent=2))

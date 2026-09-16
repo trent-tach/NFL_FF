@@ -73,7 +73,7 @@ export default function PlayerSearchSelect({
                   onSelect(p);
                   setQuery("");
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-black/5"
+                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-hover-tint"
               >
                 <PlayerPhoto src={p.photo_url} alt={p.name} size={24} />
                 <span className="font-medium">{p.name}</span>

@@ -36,11 +36,12 @@ export default function GamesPage() {
     <div>
       <h1 className="text-3xl font-bold tracking-tight">Game Predictions</h1>
       <p className="mt-2 text-muted">
-        Straight-up winner picks, blending the Vegas line with our own offense/defense signals.
+        Straight-up winner picks, driven mainly by our own strength-of-schedule-adjusted power
+        ratings and play efficiency — Vegas is only a minority input.
       </p>
 
       {error && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+        <div className="mt-4 rounded-card border border-danger-border bg-danger-soft px-4 py-3 text-danger">
           <strong>Could not load games</strong> ({error}).
         </div>
       )}
@@ -50,7 +51,8 @@ export default function GamesPage() {
           <select
             value={weekKey ?? ""}
             onChange={(e) => setWeekKey(e.target.value)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm"
+            aria-label="Week"
+            className="rounded-full border border-border-strong bg-surface px-4 py-2 font-display text-[12px] font-bold uppercase tracking-[0.06em] transition-colors hover:bg-hover-tint"
           >
             {gameWeeks.map((w) => (
               <option key={w.key} value={w.key}>
@@ -62,8 +64,8 @@ export default function GamesPage() {
       )}
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {games.map((game, i) => (
-          <GameCard key={game.game_id} game={game} index={i} />
+        {games.map((game) => (
+          <GameCard key={game.game_id} game={game} />
         ))}
       </div>
     </div>

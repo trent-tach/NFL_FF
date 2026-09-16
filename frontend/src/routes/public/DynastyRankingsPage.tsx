@@ -21,7 +21,7 @@ export default function DynastyRankingsPage() {
       </p>
 
       {error && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+        <div className="mt-4 rounded-md border border-danger-border bg-danger-soft px-4 py-3 text-danger">
           <strong>Could not load rankings</strong> ({error}).
         </div>
       )}

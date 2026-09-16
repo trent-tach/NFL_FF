@@ -20,7 +20,7 @@ export default function PlayerPage() {
 
   if (error) {
     return (
-      <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+      <div className="rounded-md border border-danger-border bg-danger-soft px-4 py-3 text-danger">
         <strong>Could not load player</strong> ({error}).
       </div>
     );
