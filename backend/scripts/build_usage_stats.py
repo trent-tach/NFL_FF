@@ -56,6 +56,23 @@ def build_entries(df: pd.DataFrame, photo_map: dict[str, str], overrides: dict[s
             "rush_share": round(float(row["rush_share"]), 3) if pd.notna(row["rush_share"]) else None,
             "snap_pct": round(float(row["snap_pct"]), 1) if pd.notna(row["snap_pct"]) else None,
             "team_success_rate": round(float(row["team_success_rate"]), 3) if pd.notna(row["team_success_rate"]) else None,
+            "catchable_target_pct": round(float(row["catchable_target_pct"]), 3) if pd.notna(row["catchable_target_pct"]) else None,
+            "third_fourth_down_targets": int(row["third_fourth_down_targets"]),
+            "third_fourth_down_ppr": round(float(row["third_fourth_down_ppr"]), 1),
+            "end_zone_targets": int(row["end_zone_targets"]),
+            "end_zone_ppr": round(float(row["end_zone_ppr"]), 1),
+            "two_min_targets": int(row["two_min_targets"]),
+            "two_min_carries": int(row["two_min_carries"]),
+            "two_min_attempts": int(row["two_min_attempts"]),
+            "two_min_ppr": round(float(row["two_min_ppr"]), 1),
+            "ldd_targets": int(row["ldd_targets"]),
+            "ldd_carries": int(row["ldd_carries"]),
+            "ldd_attempts": int(row["ldd_attempts"]),
+            "ldd_ppr": round(float(row["ldd_ppr"]), 1),
+            "sdd_targets": int(row["sdd_targets"]),
+            "sdd_carries": int(row["sdd_carries"]),
+            "sdd_attempts": int(row["sdd_attempts"]),
+            "sdd_ppr": round(float(row["sdd_ppr"]), 1),
         })
 
     if unmatched:
