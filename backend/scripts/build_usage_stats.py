@@ -78,6 +78,9 @@ def build_entries(df: pd.DataFrame, photo_map: dict[str, str], overrides: dict[s
             "sdd_ppr": round(float(row["sdd_ppr"]), 1),
             "total_ppr": round(float(row["total_ppr"]), 1),
             "ppr_rank": int(row["ppr_rank"]),
+            "ppg": round(float(row["ppg"]), 1),
+            "xppg": round(float(row["xppg"]), 1) if pd.notna(row["xppg"]) else None,
+            "fpoe_per_game": round(float(row["fpoe_per_game"]), 1) if pd.notna(row["fpoe_per_game"]) else None,
         })
 
     if unmatched:

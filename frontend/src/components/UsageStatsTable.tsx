@@ -86,6 +86,38 @@ const columns: Column<UsageStatEntry>[] = [
     cell: (p) => `#${p.ppr_rank}`,
   },
   {
+    key: "ppg",
+    header: "PPG",
+    align: "right",
+    sortable: true,
+    sortValue: (p) => p.ppg,
+    cell: (p) => p.ppg.toFixed(1),
+  },
+  {
+    key: "xppg",
+    header: "xPPG",
+    align: "right",
+    sortable: true,
+    sortValue: (p) => p.xppg,
+    cell: (p) => num(p.xppg, 1),
+  },
+  {
+    key: "fpoe",
+    header: "FPOE/G",
+    align: "right",
+    sortable: true,
+    sortValue: (p) => p.fpoe_per_game,
+    cell: (p) =>
+      p.fpoe_per_game == null ? (
+        "—"
+      ) : (
+        <span className={p.fpoe_per_game >= 0 ? "text-success" : "text-danger"}>
+          {p.fpoe_per_game > 0 ? "+" : ""}
+          {p.fpoe_per_game.toFixed(1)}
+        </span>
+      ),
+  },
+  {
     key: "snap_pct",
     header: "Snap %",
     align: "right",
@@ -255,6 +287,12 @@ export default function UsageStatsTable({ entries }: { entries: UsageStatEntry[]
             </div>
             <dl className="mt-2.5 grid grid-cols-3 gap-x-2 gap-y-1.5 text-xs">
               <MobileStat label="PPR" value={`${p.total_ppr.toFixed(1)} (#${p.ppr_rank})`} />
+              <MobileStat label="PPG" value={p.ppg.toFixed(1)} />
+              <MobileStat label="xPPG" value={num(p.xppg, 1)} />
+              <MobileStat
+                label="FPOE/G"
+                value={p.fpoe_per_game == null ? "—" : `${p.fpoe_per_game > 0 ? "+" : ""}${p.fpoe_per_game.toFixed(1)}`}
+              />
               <MobileStat label="Snap %" value={num(p.snap_pct) + (p.snap_pct != null ? "%" : "")} />
               <MobileStat label="Tgt Share" value={qb ? "—" : pct(p.target_share, 1)} />
               <MobileStat label="Rush Share" value={pct(p.rush_share, 1)} />

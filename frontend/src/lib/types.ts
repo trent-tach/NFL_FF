@@ -126,6 +126,15 @@ export interface UsageStatEntry {
 
   total_ppr: number; // real season-to-date production, not a projection
   ppr_rank: number; // rank across the whole board by total_ppr
+  ppg: number; // total_ppr / games
+
+  // Expected fantasy points per game -- what a league-average player
+  // would have scored, on average, from exactly this player's rushing +
+  // receiving opportunities (calibrated on the prior season's play-by-play).
+  // QB passing isn't modeled yet, so both are null for QB rather than a
+  // number that would quietly omit almost all of a QB's real value.
+  xppg: number | null;
+  fpoe_per_game: number | null; // ppg - xppg: positive = outperforming his opportunities
 }
 
 export interface GamePrediction {

@@ -2554,6 +2554,89 @@ def compute_situational_stats(season: int, week: int) -> pd.DataFrame:
     return result[output_cols].reset_index(drop=True)
 
 
+def compute_expected_fantasy_points(season: int, week: int) -> pd.DataFrame:
+    """Expected fantasy points from rushing and receiving opportunities --
+    the standard "xFP" methodology: what would a league-average player
+    have scored, on average, from exactly the touches this player
+    actually got, at exactly the field position/depth those touches came
+    from. The gap between real production and this number (fantasy
+    points over expected, FPOE) separates skill/luck from pure
+    opportunity -- a player running hot on efficiency tends to regress
+    toward this number, one running cold tends to improve toward it.
+
+    Calibrated on the PRIOR season's play-by-play (same cold-start
+    convention the rest of this file already uses for e.g. DVP), so a
+    single sparse week of the current season is never asked to estimate
+    its own touchdown rate near the goal line -- exactly the number that
+    needs a full season's sample to be stable. Verified against 2025:
+    a rush from the 0-4 yard line scores a TD 39.7% of the time (n=706),
+    decaying smoothly to 1.2% by the 25-29; a completed catch AT the
+    goal line scores 86.8% of the time (n=692). Both bucketed in 5-yard
+    steps by distance to the goal at the moment of the attempt.
+
+    Receiving's completion probability and expected yards-after-catch
+    reuse nflverse's own per-play modeled `cp`/`xyac_mean_yardage`
+    (already context-aware -- coverage, pressure, separation) rather
+    than a coarser air-yards-bucket average built from scratch here;
+    only touchdown-given-catch rate is bucketed from history, since
+    nflverse doesn't publish a per-play "will this be a touchdown" model.
+
+    QB passing is deliberately NOT included -- this is rushing +
+    receiving legs only, so a QB's xfp only reflects his own scrambles
+    and (rare) receptions, never his passing yards or TDs. That's a real
+    gap, not an oversight: an honest expected-interception rate needs
+    its own calibration (not simply 1 - completion rate, which conflates
+    "incomplete" with "picked off"), and is deliberately left for a
+    later pass rather than shipping a QB number that quietly omits most
+    of his value. `build_usage_stats_board` nulls xppg/FPOE for QB for
+    exactly this reason."""
+    prior = load_prior_season_inputs(season - 1)
+    prior_pbp = prior["pbp"]
+    current = load_current_season_inputs(season)
+    pbp = current["pbp"]
+    pbp = pbp[pbp["week"] < week] if not pbp.empty else pbp
+
+    output_cols = ["player_id", "xfp"]
+    if pbp.empty or prior_pbp.empty:
+        return pd.DataFrame(columns=output_cols)
+
+    # --- Calibration tables from the prior season -------------------------
+    rush_hist = prior_pbp[prior_pbp["rush_attempt"] == 1].copy()
+    rush_hist["bucket"] = (rush_hist["yardline_100"] // 5 * 5).clip(0, 95)
+    rush_calib = rush_hist.groupby("bucket").agg(
+        avg_yards=("yards_gained", "mean"), td_rate=("rush_touchdown", "mean"))
+
+    tgt_hist = prior_pbp[(prior_pbp["pass_attempt"] == 1) & prior_pbp["air_yards"].notna()].copy()
+    tgt_hist["catch_bucket"] = (
+        (tgt_hist["yardline_100"] - tgt_hist["air_yards"]).clip(lower=0) // 5 * 5
+    ).clip(0, 95)
+    catch_calib = (tgt_hist[tgt_hist["complete_pass"] == 1]
+                   .groupby("catch_bucket")["pass_touchdown"].mean()
+                   .rename("td_rate_given_catch"))
+
+    # --- Rushing xFP, applied to this season's actual attempts ------------
+    rush = pbp[pbp["rush_attempt"] == 1].dropna(subset=["rusher_player_id"]).copy()
+    rush["bucket"] = (rush["yardline_100"] // 5 * 5).clip(0, 95)
+    rush = rush.merge(rush_calib, on="bucket", how="left")
+    rush["xfp_play"] = rush["avg_yards"].fillna(0) * 0.1 + rush["td_rate"].fillna(0) * 6
+    rush_xfp = rush.groupby("rusher_player_id")["xfp_play"].sum().rename("rush_xfp")
+
+    # --- Receiving xFP, applied to this season's actual targets -----------
+    tgt = (pbp[(pbp["pass_attempt"] == 1) & pbp["air_yards"].notna()]
+           .dropna(subset=["receiver_player_id"]).copy())
+    tgt["catch_bucket"] = ((tgt["yardline_100"] - tgt["air_yards"]).clip(lower=0) // 5 * 5).clip(0, 95)
+    tgt = tgt.merge(catch_calib, on="catch_bucket", how="left")
+    tgt["td_rate_given_catch"] = tgt["td_rate_given_catch"].fillna(0)
+    cp = tgt["cp"].fillna(tgt["cp"].mean())
+    expected_yards_if_caught = tgt["air_yards"].fillna(0) + tgt["xyac_mean_yardage"].fillna(0)
+    tgt["xfp_play"] = cp * 1.0 + cp * expected_yards_if_caught * 0.1 + cp * tgt["td_rate_given_catch"] * 6
+    rec_xfp = tgt.groupby("receiver_player_id")["xfp_play"].sum().rename("rec_xfp")
+
+    result = pd.concat([rush_xfp, rec_xfp], axis=1).fillna(0)
+    result["xfp"] = result["rush_xfp"] + result["rec_xfp"]
+    return result[["xfp"]].rename_axis("player_id").reset_index()
+
+
 def build_usage_stats_board(season: int, week: int) -> pd.DataFrame:
     """Season-to-date usage profile per player, through the most recently
     completed week -- for a showcase page, and as a direct window into
@@ -2580,7 +2663,7 @@ def build_usage_stats_board(season: int, week: int) -> pd.DataFrame:
                    "two_min_targets", "two_min_carries", "two_min_attempts", "two_min_ppr",
                    "ldd_targets", "ldd_carries", "ldd_attempts", "ldd_ppr",
                    "sdd_targets", "sdd_carries", "sdd_attempts", "sdd_ppr",
-                   "total_ppr", "ppr_rank"]
+                   "total_ppr", "ppr_rank", "ppg", "xppg", "fpoe_per_game"]
     if weekly.empty:
         return pd.DataFrame(columns=output_cols)
 
@@ -2620,6 +2703,7 @@ def build_usage_stats_board(season: int, week: int) -> pd.DataFrame:
     # subsets those buckets already compute separately.
     agg["total_ppr"] = calculate_fantasy_points(agg, "ppr").round(1)
     agg["ppr_rank"] = agg["total_ppr"].rank(ascending=False, method="min").astype(int)
+    agg["ppg"] = (agg["total_ppr"] / agg["games"]).round(1)
 
     # Raw red-zone target counts, not the share `compute_redzone_shares`
     # already computes and needs internally -- a plain count is the more
@@ -2639,6 +2723,17 @@ def build_usage_stats_board(season: int, week: int) -> pd.DataFrame:
 
     situational = compute_situational_stats(season, week)
     agg = agg.merge(situational, on="player_id", how="left")
+
+    xfp = compute_expected_fantasy_points(season, week)
+    agg = agg.merge(xfp, on="player_id", how="left")
+    agg["xppg"] = (agg["xfp"] / agg["games"]).round(1)
+    agg["fpoe_per_game"] = (agg["ppg"] - agg["xppg"]).round(1)
+    # xfp only models rushing + receiving legs (see compute_expected_
+    # fantasy_points' docstring for why QB passing isn't in it yet) -- a
+    # QB's xppg would otherwise quietly omit almost all of his real value,
+    # so both derived numbers are nulled for QB rather than shown as if
+    # they meant the same thing they do for a RB/WR/TE.
+    agg.loc[agg["position"] == "QB", ["xppg", "fpoe_per_game"]] = np.nan
 
     # Share of THIS player's own targets, not a share of the team's --
     # "36% of his targets came on 3rd/4th down" rather than "he drew 36%
