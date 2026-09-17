@@ -2467,8 +2467,9 @@ def compute_situational_stats(season: int, week: int) -> pd.DataFrame:
     & 2 or less) -- and these count a QB's own dropbacks alongside a RB's
     carries and a WR's targets, because "PPR points earned in this
     situation" means the same thing regardless of how the player got
-    there. Catchable-target rate (FTN's charted `is_catchable_ball`,
-    2022+) is also receiving-only.
+    there. Catchable-target rate and play-action target rate (FTN's
+    charted `is_catchable_ball`/`is_play_action`, 2022+) are also
+    receiving-only.
 
     Route %, targets-per-route-run, and route share are NOT here --
     nflverse's free data has no per-player-per-play route flag for
@@ -2480,7 +2481,7 @@ def compute_situational_stats(season: int, week: int) -> pd.DataFrame:
     pbp = pbp[pbp["week"] < week] if not pbp.empty else pbp
 
     output_cols = [
-        "player_id", "catchable_target_pct",
+        "player_id", "catchable_target_pct", "play_action_target_pct",
         "third_fourth_down_targets", "third_fourth_down_ppr",
         "end_zone_targets", "end_zone_ppr",
         "two_min_targets", "two_min_carries", "two_min_attempts", "two_min_ppr",
@@ -2516,7 +2517,10 @@ def compute_situational_stats(season: int, week: int) -> pd.DataFrame:
     result = _merge_situational_bucket(result, sdd, "sdd",
                                         position_map, include_carries=True, include_attempts=True)
 
-    # --- Catchable target % (FTN charting, 2022+) -------------------------
+    # --- Catchable target % and play-action target % (FTN charting, 2022+)
+    # Both share the same join and the same denominator (targets FTN
+    # actually charted that game), so they're computed together in one
+    # pass rather than joining FTN onto pbp twice for two similar numbers.
     try:
         ftn = nfl.load_ftn_charting([season]).to_pandas()
     except Exception:
@@ -2524,18 +2528,28 @@ def compute_situational_stats(season: int, week: int) -> pd.DataFrame:
 
     if not ftn.empty and "is_catchable_ball" in ftn.columns:
         ftn = ftn.rename(columns={"nflverse_game_id": "game_id", "nflverse_play_id": "play_id"})
+        ftn_cols = ["game_id", "play_id", "is_catchable_ball"]
+        has_play_action = "is_play_action" in ftn.columns
+        if has_play_action:
+            ftn_cols.append("is_play_action")
         joined = (pbp[pbp["pass_attempt"] == 1].dropna(subset=["receiver_player_id"])
-                  .merge(ftn[["game_id", "play_id", "is_catchable_ball"]],
-                         on=["game_id", "play_id"], how="inner"))
-        catchable = (joined.groupby("receiver_player_id")
-                     .agg(targets=("play_id", "size"), catchable=("is_catchable_ball", "sum"))
-                     .reset_index().rename(columns={"receiver_player_id": "player_id"}))
-        catchable["catchable_target_pct"] = np.where(
-            catchable["targets"] > 0, catchable["catchable"] / catchable["targets"], np.nan)
-        result = result.merge(catchable[["player_id", "catchable_target_pct"]],
-                               on="player_id", how="outer")
-    if "catchable_target_pct" not in result.columns:
-        result["catchable_target_pct"] = np.nan
+                  .merge(ftn[ftn_cols], on=["game_id", "play_id"], how="inner"))
+        agg_kwargs = dict(targets=("play_id", "size"), catchable=("is_catchable_ball", "sum"))
+        if has_play_action:
+            agg_kwargs["play_action"] = ("is_play_action", "sum")
+        charted = (joined.groupby("receiver_player_id").agg(**agg_kwargs)
+                   .reset_index().rename(columns={"receiver_player_id": "player_id"}))
+        charted["catchable_target_pct"] = np.where(
+            charted["targets"] > 0, charted["catchable"] / charted["targets"], np.nan)
+        keep = ["player_id", "catchable_target_pct"]
+        if has_play_action:
+            charted["play_action_target_pct"] = np.where(
+                charted["targets"] > 0, charted["play_action"] / charted["targets"], np.nan)
+            keep.append("play_action_target_pct")
+        result = result.merge(charted[keep], on="player_id", how="outer")
+    for col in ("catchable_target_pct", "play_action_target_pct"):
+        if col not in result.columns:
+            result[col] = np.nan
 
     return result[output_cols].reset_index(drop=True)
 
@@ -2560,12 +2574,13 @@ def build_usage_stats_board(season: int, week: int) -> pd.DataFrame:
     output_cols = ["player_id", "player_display_name", "team", "position", "games",
                    "target_share", "air_yards", "air_yards_share", "adot",
                    "red_zone_targets", "rush_share", "snap_pct", "team_success_rate",
-                   "catchable_target_pct",
-                   "third_fourth_down_targets", "third_fourth_down_ppr",
-                   "end_zone_targets", "end_zone_ppr",
+                   "catchable_target_pct", "play_action_target_pct",
+                   "third_fourth_down_targets", "third_fourth_down_target_pct", "third_fourth_down_ppr",
+                   "end_zone_targets", "end_zone_target_pct", "end_zone_ppr",
                    "two_min_targets", "two_min_carries", "two_min_attempts", "two_min_ppr",
                    "ldd_targets", "ldd_carries", "ldd_attempts", "ldd_ppr",
-                   "sdd_targets", "sdd_carries", "sdd_attempts", "sdd_ppr"]
+                   "sdd_targets", "sdd_carries", "sdd_attempts", "sdd_ppr",
+                   "total_ppr", "ppr_rank"]
     if weekly.empty:
         return pd.DataFrame(columns=output_cols)
 
@@ -2581,13 +2596,30 @@ def build_usage_stats_board(season: int, week: int) -> pd.DataFrame:
         team=("team", "last"),
         games=("week", "nunique"),
         target_share=("target_share", "mean"),
+        total_targets=("targets", "sum"),
         air_yards=("receiving_air_yards", "sum"),
         air_yards_share=("air_yards_share", "mean"),
         adot=("adot", "mean"),
         rush_share=("carry_share", "mean"),
         snap_pct=("snap_share", "mean"),
+        receptions=("receptions", "sum"),
+        receiving_yards=("receiving_yards", "sum"),
+        receiving_tds=("receiving_tds", "sum"),
+        rushing_yards=("rushing_yards", "sum"),
+        rushing_tds=("rushing_tds", "sum"),
+        passing_yards=("passing_yards", "sum"),
+        passing_tds=("passing_tds", "sum"),
+        passing_interceptions=("passing_interceptions", "sum"),
+        fumbles_lost_total=("fumbles_lost_total", "sum"),
     ).reset_index()
     agg["snap_pct"] = agg["snap_pct"] * 100
+
+    # Real season-to-date production, not a projection -- the same
+    # `calculate_fantasy_points` the model uses everywhere else, run once
+    # over the summed raw box-score stats above rather than the situational
+    # subsets those buckets already compute separately.
+    agg["total_ppr"] = calculate_fantasy_points(agg, "ppr").round(1)
+    agg["ppr_rank"] = agg["total_ppr"].rank(ascending=False, method="min").astype(int)
 
     # Raw red-zone target counts, not the share `compute_redzone_shares`
     # already computes and needs internally -- a plain count is the more
@@ -2607,6 +2639,16 @@ def build_usage_stats_board(season: int, week: int) -> pd.DataFrame:
 
     situational = compute_situational_stats(season, week)
     agg = agg.merge(situational, on="player_id", how="left")
+
+    # Share of THIS player's own targets, not a share of the team's --
+    # "36% of his targets came on 3rd/4th down" rather than "he drew 36%
+    # of the team's 3rd-down targets" (that would be third_fourth_down_targets
+    # divided by a team-level total, a different and not-yet-built number).
+    agg["end_zone_target_pct"] = np.where(
+        agg["total_targets"] > 0, agg["end_zone_targets"].fillna(0) / agg["total_targets"], np.nan)
+    agg["third_fourth_down_target_pct"] = np.where(
+        agg["total_targets"] > 0, agg["third_fourth_down_targets"].fillna(0) / agg["total_targets"], np.nan)
+
     count_cols = [c for c in output_cols if c.endswith(("targets", "carries", "attempts"))]
     ppr_cols = [c for c in output_cols if c.endswith("_ppr")]
     for c in count_cols:

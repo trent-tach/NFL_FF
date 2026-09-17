@@ -57,9 +57,12 @@ def build_entries(df: pd.DataFrame, photo_map: dict[str, str], overrides: dict[s
             "snap_pct": round(float(row["snap_pct"]), 1) if pd.notna(row["snap_pct"]) else None,
             "team_success_rate": round(float(row["team_success_rate"]), 3) if pd.notna(row["team_success_rate"]) else None,
             "catchable_target_pct": round(float(row["catchable_target_pct"]), 3) if pd.notna(row["catchable_target_pct"]) else None,
+            "play_action_target_pct": round(float(row["play_action_target_pct"]), 3) if pd.notna(row["play_action_target_pct"]) else None,
             "third_fourth_down_targets": int(row["third_fourth_down_targets"]),
+            "third_fourth_down_target_pct": round(float(row["third_fourth_down_target_pct"]), 3) if pd.notna(row["third_fourth_down_target_pct"]) else None,
             "third_fourth_down_ppr": round(float(row["third_fourth_down_ppr"]), 1),
             "end_zone_targets": int(row["end_zone_targets"]),
+            "end_zone_target_pct": round(float(row["end_zone_target_pct"]), 3) if pd.notna(row["end_zone_target_pct"]) else None,
             "end_zone_ppr": round(float(row["end_zone_ppr"]), 1),
             "two_min_targets": int(row["two_min_targets"]),
             "two_min_carries": int(row["two_min_carries"]),
@@ -73,6 +76,8 @@ def build_entries(df: pd.DataFrame, photo_map: dict[str, str], overrides: dict[s
             "sdd_carries": int(row["sdd_carries"]),
             "sdd_attempts": int(row["sdd_attempts"]),
             "sdd_ppr": round(float(row["sdd_ppr"]), 1),
+            "total_ppr": round(float(row["total_ppr"]), 1),
+            "ppr_rank": int(row["ppr_rank"]),
         })
 
     if unmatched:

@@ -104,9 +104,12 @@ export interface UsageStatEntry {
   // from whichever of those actually happened -- the same number means the
   // same thing ("points earned in this situation") across every position.
   catchable_target_pct: number | null; // 0-1, null for QB
+  play_action_target_pct: number | null; // 0-1, null for QB
   third_fourth_down_targets: number;
+  third_fourth_down_target_pct: number | null; // share of THIS player's own targets, not the team's
   third_fourth_down_ppr: number;
   end_zone_targets: number;
+  end_zone_target_pct: number | null;
   end_zone_ppr: number;
   two_min_targets: number;
   two_min_carries: number;
@@ -120,6 +123,9 @@ export interface UsageStatEntry {
   sdd_carries: number;
   sdd_attempts: number;
   sdd_ppr: number;
+
+  total_ppr: number; // real season-to-date production, not a projection
+  ppr_rank: number; // rank across the whole board by total_ppr
 }
 
 export interface GamePrediction {

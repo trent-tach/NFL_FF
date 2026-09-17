@@ -22,25 +22,32 @@ const num = (v: number | null, digits = 0) => (v != null ? v.toFixed(digits) : "
 
 const isQb = (p: UsageStatEntry) => p.position === "QB";
 
-/** A situational-bucket cell: the PPR points it produced, sortable, with
- *  the opportunity count that earned them shown underneath. `receivingOnly`
- *  cells go blank for a QB; the broader (2-min/LDD/SDD) cells sum
- *  whichever of targets/carries/attempts actually happened, since for a
- *  QB that's attempts and for a WR it's targets. */
+/** A situational-bucket cell: the PPR points it produced, sortable, with a
+ *  second line underneath giving it context. `share` (a % of this player's
+ *  OWN targets) is used for the two receiving-only cuts, where "42% of his
+ *  targets were on 3rd/4th down" is the more useful read than a bare
+ *  count; `opportunities` (a raw count) is used for the broader 2-min/LDD/
+ *  SDD cuts, which mix targets/carries/attempts and have no single "share
+ *  of what" that means the same thing across positions. `applicable`
+ *  false renders a blank dash for a QB on the receiving-only cuts. */
 function BucketCell({
   ppr,
+  share,
   opportunities,
   applicable,
 }: {
   ppr: number;
-  opportunities: number;
+  share?: number | null;
+  opportunities?: number;
   applicable: boolean;
 }) {
   if (!applicable) return <span className="text-muted">—</span>;
   return (
     <span className="flex flex-col items-end leading-tight">
       <span className="font-display font-bold tabular-nums">{ppr.toFixed(1)}</span>
-      <span className="text-[11px] text-muted">{opportunities} opp</span>
+      <span className="text-[11px] text-muted">
+        {share != null ? pct(share, 0) + " of tgt" : `${opportunities} opp`}
+      </span>
     </span>
   );
 }
@@ -60,6 +67,23 @@ const columns: Column<UsageStatEntry>[] = [
         </span>
       </span>
     ),
+  },
+  {
+    key: "total_ppr",
+    header: "PPR",
+    align: "right",
+    sortable: true,
+    sortValue: (p) => p.total_ppr,
+    cell: (p) => p.total_ppr.toFixed(1),
+  },
+  {
+    key: "ppr_rank",
+    header: "PPR Rk",
+    align: "right",
+    hideBelow: "md",
+    sortable: true,
+    sortValue: (p) => p.ppr_rank,
+    cell: (p) => `#${p.ppr_rank}`,
   },
   {
     key: "snap_pct",
@@ -122,7 +146,7 @@ const columns: Column<UsageStatEntry>[] = [
     cell: (p) => (
       <BucketCell
         ppr={p.third_fourth_down_ppr}
-        opportunities={p.third_fourth_down_targets}
+        share={p.third_fourth_down_target_pct}
         applicable={!isQb(p)}
       />
     ),
@@ -134,7 +158,25 @@ const columns: Column<UsageStatEntry>[] = [
     hideBelow: "lg",
     sortable: true,
     sortValue: (p) => (isQb(p) ? null : p.end_zone_ppr),
-    cell: (p) => <BucketCell ppr={p.end_zone_ppr} opportunities={p.end_zone_targets} applicable={!isQb(p)} />,
+    cell: (p) => <BucketCell ppr={p.end_zone_ppr} share={p.end_zone_target_pct} applicable={!isQb(p)} />,
+  },
+  {
+    key: "play_action_pct",
+    header: "PA Tgt%",
+    align: "right",
+    hideBelow: "lg",
+    sortable: true,
+    sortValue: (p) => (isQb(p) ? null : p.play_action_target_pct),
+    cell: (p) => (isQb(p) ? "—" : pct(p.play_action_target_pct, 1)),
+  },
+  {
+    key: "air_yards_share",
+    header: "Air Yd%",
+    align: "right",
+    hideBelow: "lg",
+    sortable: true,
+    sortValue: (p) => (isQb(p) ? null : p.air_yards_share),
+    cell: (p) => (isQb(p) ? "—" : pct(p.air_yards_share, 1)),
   },
   {
     key: "two_min",
@@ -212,19 +254,22 @@ export default function UsageStatsTable({ entries }: { entries: UsageStatEntry[]
               </span>
             </div>
             <dl className="mt-2.5 grid grid-cols-3 gap-x-2 gap-y-1.5 text-xs">
+              <MobileStat label="PPR" value={`${p.total_ppr.toFixed(1)} (#${p.ppr_rank})`} />
               <MobileStat label="Snap %" value={num(p.snap_pct) + (p.snap_pct != null ? "%" : "")} />
               <MobileStat label="Tgt Share" value={qb ? "—" : pct(p.target_share, 1)} />
               <MobileStat label="Rush Share" value={pct(p.rush_share, 1)} />
               <MobileStat label="Catchable%" value={qb ? "—" : pct(p.catchable_target_pct, 1)} />
+              <MobileStat label="PA Tgt%" value={qb ? "—" : pct(p.play_action_target_pct, 1)} />
+              <MobileStat label="Air Yd%" value={qb ? "—" : pct(p.air_yards_share, 1)} />
               <MobileStat label="RZ Tgt" value={qb ? "—" : String(p.red_zone_targets)} />
               <MobileStat label="Team Success%" value={pct(p.team_success_rate, 1)} />
               <MobileStat
                 label="3rd/4th Dn PPR"
-                value={qb ? "—" : `${p.third_fourth_down_ppr.toFixed(1)} (${p.third_fourth_down_targets})`}
+                value={qb ? "—" : `${p.third_fourth_down_ppr.toFixed(1)} (${pct(p.third_fourth_down_target_pct, 0)})`}
               />
               <MobileStat
                 label="End Zone PPR"
-                value={qb ? "—" : `${p.end_zone_ppr.toFixed(1)} (${p.end_zone_targets})`}
+                value={qb ? "—" : `${p.end_zone_ppr.toFixed(1)} (${pct(p.end_zone_target_pct, 0)})`}
               />
               <MobileStat label="2-Min PPR" value={p.two_min_ppr.toFixed(1)} />
               <MobileStat label="LDD PPR" value={p.ldd_ppr.toFixed(1)} />
